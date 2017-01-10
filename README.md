@@ -1,6 +1,8 @@
 # easy-code
 
-写出简洁的JS代码 [clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)
+写出简洁的JS代码   
+[clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)  
+[airbnb / javascript](https://github.com/airbnb/javascript)  
 
 _见名知意_
 
