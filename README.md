@@ -636,3 +636,275 @@ function combine(val1, val2) {
   return val1 + val2;
 }
 ```
+
+_善用setter getter_
+
+- When you want to do more beyond getting an object property, you don't have to look up and change every accessor in your codebase.
+Makes adding validation simple when doing a set.
+- Encapsulates the internal representation.
+- Easy to add logging and error handling when getting and setting.
+- Inheriting this class, you can override default functionality.
+- You can lazy load your object's properties, let's say getting it from a server.
+
+`bad`
+```javascript
+class BankAccount {
+  constructor() {
+    this.balance = 1000;
+  }
+}
+
+const bankAccount = new BankAccount();
+
+// Buy shoes...
+bankAccount.balance -= 100;
+```
+
+`better`
+```javascript
+class BankAccount {
+  constructor(balance = 1000) {
+    this._balance = balance;
+  }
+
+  // It doesn't have to be prefixed with `get` or `set` to be a getter/setter
+  set balance(amount) {
+    if (verifyIfAmountCanBeSetted(amount)) {
+      this._balance = amount;
+    }
+  }
+
+  get balance() {
+    return this._balance;
+  }
+
+  verifyIfAmountCanBeSetted(val) {
+    // ...
+  }
+}
+
+const bankAccount = new BankAccount();
+
+// Buy shoes...
+bankAccount.balance -= shoesPrice;
+
+// Get balance
+let balance = bankAccount.balance;
+```
+
+_es6类优于es5函数构造_
+
+`bad`
+```javascript
+const Animal = function(age) {
+  if (!(this instanceof Animal)) {
+    throw new Error('Instantiate Animal with `new`');
+  }
+
+  this.age = age;
+};
+
+Animal.prototype.move = function move() {};
+
+const Mammal = function(age, furColor) {
+  if (!(this instanceof Mammal)) {
+    throw new Error('Instantiate Mammal with `new`');
+  }
+
+  Animal.call(this, age);
+  this.furColor = furColor;
+};
+
+Mammal.prototype = Object.create(Animal.prototype);
+Mammal.prototype.constructor = Mammal;
+Mammal.prototype.liveBirth = function liveBirth() {};
+
+const Human = function(age, furColor, languageSpoken) {
+  if (!(this instanceof Human)) {
+    throw new Error('Instantiate Human with `new`');
+  }
+
+  Mammal.call(this, age, furColor);
+  this.languageSpoken = languageSpoken;
+};
+
+Human.prototype = Object.create(Mammal.prototype);
+Human.prototype.constructor = Human;
+Human.prototype.speak = function speak() {};
+```
+
+`better`
+```javascript
+class Animal {
+  constructor(age) {
+    this.age = age;
+  }
+
+  move() { /* ... */ }
+}
+
+class Mammal extends Animal {
+  constructor(age, furColor) {
+    super(age);
+    this.furColor = furColor;
+  }
+
+  liveBirth() { /* ... */ }
+}
+
+class Human extends Mammal {
+  constructor(age, furColor, languageSpoken) {
+    super(age, furColor);
+    this.languageSpoken = languageSpoken;
+  }
+
+  speak() { /* ... */ }
+}
+```
+
+_巧用链式方法_
+
+`bad`
+```javascript
+class Car {
+  constructor() {
+    this.make = 'Honda';
+    this.model = 'Accord';
+    this.color = 'white';
+  }
+
+  setMake(make) {
+    this.make = make;
+  }
+
+  setModel(model) {
+    this.model = model;
+  }
+
+  setColor(color) {
+    this.color = color;
+  }
+
+  save() {
+    console.log(this.make, this.model, this.color);
+  }
+}
+
+const car = new Car();
+car.setColor('pink');
+car.setMake('Ford');
+car.setModel('F-150');
+car.save();
+```
+
+`better`
+```javascript
+class Car {
+  constructor() {
+    this.make = 'Honda';
+    this.model = 'Accord';
+    this.color = 'white';
+  }
+
+  setMake(make) {
+    this.make = make;
+    // NOTE: Returning this for chaining
+    return this;
+  }
+
+  setModel(model) {
+    this.model = model;
+    // NOTE: Returning this for chaining
+    return this;
+  }
+
+  setColor(color) {
+    this.color = color;
+    // NOTE: Returning this for chaining
+    return this;
+  }
+
+  save() {
+    console.log(this.make, this.model, this.color);
+    // NOTE: Returning this for chaining
+    return this;
+  }
+}
+
+const car = new Car()
+  .setColor('pink')
+  .setMake('Ford')
+  .setModel('F-150')
+  .save();
+```
+
+_Async/Await比Promises更简洁_
+
+`bad`
+```javascript
+require('request-promise').get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin')
+  .then((response) => {
+    return require('fs-promise').writeFile('article.html', response);
+  })
+  .then(() => {
+    console.log('File written');
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+```
+
+`better`
+```javascript
+async function getCleanCodeArticle() {
+  try {
+    const request = await require('request-promise');
+    const response = await request.get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin');
+    const fileHandle = await require('fs-promise');
+
+    await fileHandle.writeFile('article.html', response);
+    console.log('File written');
+  } catch(err) {
+    console.error(err);
+  }
+}
+```
+
+_注释也许用在刀刃上_
+
+`bad`
+```javascript
+function hashIt(data) {
+  // The hash
+  let hash = 0;
+
+  // Length of string
+  const length = data.length;
+
+  // Loop through every character in data
+  for (let i = 0; i < length; i++) {
+    // Get character code.
+    const char = data.charCodeAt(i);
+    // Make the hash
+    hash = ((hash << 5) - hash) + char;
+    // Convert to 32-bit integer
+    hash &= hash;
+  }
+}
+```
+
+`better`
+```javascript
+function hashIt(data) {
+  let hash = 0;
+  const length = data.length;
+
+  for (let i = 0; i < length; i++) {
+    const char = data.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+
+    // Convert to 32-bit integer
+    hash &= hash;
+  }
+}
+```
