@@ -1,4 +1,4 @@
-# easy-code
+# better-code
 
 写出简洁的JS代码   
 [clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)  
