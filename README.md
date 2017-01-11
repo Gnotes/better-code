@@ -908,3 +908,265 @@ function hashIt(data) {
   }
 }
 ```
+
+_引用对象使用const定义_
+
+> Why? This ensures that you can't reassign your references, which can lead to bugs and difficult to comprehend code.
+
+`bad`
+```javascript
+var a = 1;
+var b = 2;
+```
+
+`better`
+```javascript
+const a = 1;
+const b = 2;
+```
+
+_let 优于 var_
+
+> let是块作用域，var是函数作用域
+
+`bad`
+```javascript
+var count = 1;
+if (true) {
+  count += 1;
+}
+```
+
+`better`
+```javascript
+let count = 1;
+if (true) {
+  count += 1;
+}
+```
+
+_es6 类函数声明简写_
+
+`bad`
+```javascript
+const atom = {
+  value: 1,
+
+  addValue: function (value) {
+    return atom.value + value;
+  },
+};
+```
+
+`better`
+```javascript
+const atom = {
+  value: 1,
+
+  addValue(value) {
+    return atom.value + value;
+  },
+};
+```
+
+_es6 属性声明简写_
+
+`bad`
+```javascript
+const obj = {
+  lukeSkywalker: lukeSkywalker,
+};
+```
+
+`better`
+```javascript
+const obj = {
+  lukeSkywalker,
+};
+```
+
+_es6 属性简写放在前面_
+
+`bad`
+```javascript
+const obj = {
+  episodeOne: 1,
+  twoJediWalkIntoACantina: 2,
+  lukeSkywalker,
+  episodeThree: 3,
+  mayTheFourth: 4,
+  anakinSkywalker,
+};
+```
+
+`better`
+```javascript
+const obj = {
+  lukeSkywalker,
+  anakinSkywalker,
+  episodeOne: 1,
+  twoJediWalkIntoACantina: 2,
+  episodeThree: 3,
+  mayTheFourth: 4,
+};
+```
+
+_es6 ...扩展优于Object.assign()_
+
+`bad`
+```javascript
+const original = { a: 1, b: 2 };
+const copy = Object.assign({}, original, { c: 3 });
+```
+
+`better`
+```javascript
+const original = { a: 1, b: 2 };
+const copy = { ...original, c: 3 };
+```
+
+_数组使用扩展符... 合并_
+
+`bad`
+```javascript
+const len = items.length;
+const itemsCopy = [];
+let i;
+
+for (i = 0; i < len; i += 1) {
+  itemsCopy[i] = items[i];
+}
+```
+
+`better`
+```javascript
+const itemsCopy = [...items];
+```
+_善用es6解构_
+
+`bad`
+```javascript
+function getFullName(user) {
+  const firstName = user.firstName;
+  const lastName = user.lastName;
+
+  return `${firstName} ${lastName}`;
+}
+```
+
+
+`better`
+```javascript
+function getFullName(user) {
+  const { firstName, lastName } = user;
+  return `${firstName} ${lastName}`;
+}
+```
+
+`nice`
+```javascript
+function getFullName({ firstName, lastName }) {
+  return `${firstName} ${lastName}`;
+}
+```
+_字符串定义使用单引号_
+
+`bad`
+```javascript
+const name = "Capt. Janeway";
+```
+
+`better`
+```javascript
+const name = 'Capt. Janeway';
+
+// template literals should contain interpolation or newlines
+const name = `Capt. Janeway`;
+```
+_字符拼接使用`_
+
+`bad`
+```javascript
+'How are you, ' + name + '?'
+```
+
+`better`
+```javascript
+`How are you, ${name}?`
+```
+_import引入多个属性分行显示_
+
+`bad`
+```javascript
+import {longNameA, longNameB, longNameC, longNameD, longNameE} from 'path';
+```
+
+`better`
+```javascript
+import {
+  longNameA,
+  longNameB,
+  longNameC,
+  longNameD,
+  longNameE,
+} from 'path';
+```
+_属性访问使用`.`_
+
+`bad`
+```javascript
+const luke = {
+  jedi: true,
+  age: 28,
+};
+
+const isJedi = luke['jedi'];
+```
+
+`better`
+```javascript
+const luke = {
+  jedi: true,
+  age: 28,
+};
+
+const isJedi = luke.jedi;
+```
+
+_每一个常量都使用const分开声明_
+
+`bad`
+```javascript
+const items = getItems(),
+    goSportsTeam = true,
+    dragonball = 'z';
+```
+
+`better`
+```javascript
+const items = getItems();
+const goSportsTeam = true;
+const dragonball = 'z';
+```
+_避免多余表达式_
+
+`bad`
+```javascript
+const foo = a ? a : b;
+const bar = c ? true : false;
+const baz = c ? false : true;
+```
+
+`better`
+```javascript
+const foo = a || b;
+const bar = !!c;
+const baz = !c;
+```
+_使用标记_
+
+`better`
+```javascript
+// FIXME
+// TODO
+```
