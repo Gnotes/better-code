@@ -1,10 +1,8 @@
 # better-code
 
-写出简洁的JS代码   
-[clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)  
-[airbnb / javascript](https://github.com/airbnb/javascript)  
+跟着牛人[`clean-code-javascript`](https://github.com/ryanmcdermott/clean-code-javascript) [`airbnb / javascript`](https://github.com/airbnb/javascript) 学习如何能写出更简洁更美观的JavaScript代码.
 
-_见名知意_
+_变量/函数命名需要简洁明了，能从命名就知道是干什么的_
 
 `bad`
 ```javascript
@@ -16,53 +14,6 @@ const yyyymmdstr = moment().format('YYYY/MM/DD');
 const yearMonthDay = moment().format('YYYY/MM/DD'); // 更清晰表达年月日的概念
 ```
 
-_同一类型变量使用相同单词表示_
-
-`bad`
-```javascript
-getUserInfo();
-getClientData();
-getCustomerRecord();
-```
-
-`better`
-```javascript
-getUser();  // 都表示User这个数据
-```
-
-_变量名易于阅读和检索_
-
-`bad`
-```javascript
-// What the heck is 525600 for?
-for (let i = 0; i < 525600; i++) {
-  runCronJob();
-}
-```
-
-`better`
-```javascript
-const MINUTES_IN_A_YEAR = 525600;
-for (let i = 0; i < MINUTES_IN_A_YEAR; i++) {   // 明确一年有多少分钟的意思
-  runCronJob();
-}
-```
-_说明性变量_
-
-`bad`
-```javascript
-const cityStateRegex = /^(.+)[,\\s]+(.+?)\s*(\d{5})?$/;
-saveCityState(cityStateRegex.match(cityStateRegex)[1], cityStateRegex.match(cityStateRegex)[2]);
-```
-
-`better`
-```javascript
-const cityStateRegex = /^(.+)[,\\s]+(.+?)\s*(\d{5})?$/;
-const match = cityStateRegex.match(cityStateRegex)
-const city  = match[1];       // match[1] 表示city
-const state = match[2];       // match[]2 表示state
-saveCityState(city, state);
-```
 _具体化变量_
 
 `bad`
@@ -86,7 +37,79 @@ locations.forEach((location) => {
 });
 ```
 
-_避免冗余_
+_同一类型变量使用相同单词表示，这样也省去了命名的烦恼和直观的展示了数据类型_
+
+`bad`
+```javascript
+getUserInfo();
+getClientData();
+getCustomerRecord();
+```
+
+`better`
+```javascript
+getUser();  // 都表示User这个数据
+```
+
+_函数名语义明确_
+
+`bad`
+```javascript
+function dateAdd(date, month) {
+  // ...
+}
+
+const date = new Date();
+
+// It's hard to to tell from the function name what is added
+dateAdd(date, 1);
+```
+
+`better`
+```javascript
+function dateAddMonth(date, month) {
+  // ...
+}
+
+const date = new Date();
+dateAddMonth(date, 1);
+```
+
+_变量名易于阅读和检索_
+
+`bad`
+```javascript
+// What the heck is 525600 for?
+for (let i = 0; i < 525600; i++) {
+  runCronJob();
+}
+```
+
+`better`
+```javascript
+const MINUTES_IN_A_YEAR = 525600;
+for (let i = 0; i < MINUTES_IN_A_YEAR; i++) {   // 明确一年有多少分钟的意思
+  runCronJob();
+}
+```
+_适当添加说明性变量，更易于阅读_
+
+`bad`
+```javascript
+const cityStateRegex = /^(.+)[,\\s]+(.+?)\s*(\d{5})?$/;
+saveCityState(cityStateRegex.match(cityStateRegex)[1], cityStateRegex.match(cityStateRegex)[2]);
+```
+
+`better`
+```javascript
+const cityStateRegex = /^(.+)[,\\s]+(.+?)\s*(\d{5})?$/;
+const match = cityStateRegex.match(cityStateRegex)
+const city  = match[1];       // match[1] 表示city
+const state = match[2];       // match[]2 表示state
+saveCityState(city, state);
+```
+
+_避免命名冗余，言简意赅的表达才是最合理的方式_
 
 `bad`
 ```javascript
@@ -114,7 +137,7 @@ function paintCar(car) {
 }
 ```
 
-_巧用逻辑或逻辑与_
+_巧用短路表达式，能写出更为简洁的代码_
 
 `bad`
 ```javascript
@@ -126,7 +149,6 @@ function createMicrobrewery(name) {
     breweryName = 'Hipster Brew Co.';
   }
 }
-
 ```
 
 `better`
@@ -209,43 +231,19 @@ function emailClients(clients) {
 
 `better`
 ```javascript
-function emailClients(clients) {
+function emailClients(clients) { // 该函数功能为过滤出email client，其他操作与他无关，因此提取isClientActive为单独函数，我是这样理解的，不恰当出望指出
   clients
-    .filter(isClientActive)
+    .filter(isClientActive) // emailClents只关注email client, 从数据库获取数据这些操作提取函数单独处理
     .forEach(email);
 }
 
-function isClientActive(client) {
+function isClientActive(client) { // 通过数据库或其他操作 判断该client是否符合条件，也只做了一件事
   const clientRecord = database.lookup(client);
   return clientRecord.isActive();
 }
 ```
 
-_函数名语义明确_
-
-`bad`
-```javascript
-function dateAdd(date, month) {
-  // ...
-}
-
-const date = new Date();
-
-// It's hard to to tell from the function name what is added
-dateAdd(date, 1);
-```
-
-`better`
-```javascript
-function dateAddMonth(date, month) {
-  // ...
-}
-
-const date = new Date();
-dateAddMonth(date, 1);
-```
-
-_函数应只封装一层_
+_当函数逻辑复杂时应该封装逻辑处理为单独的一层方法，这样更能清晰代码逻辑_
 
 `bad`
 ```javascript
@@ -275,7 +273,7 @@ function parseBetterJSAlternative(code) {
 
 `better`
 ```javascript
-function tokenize(code) { // 抽离一层方法只关注一件事
+function tokenize(code) { // 该函数关注获取tokennize操作
   const REGEXES = [
     // ...
   ];
@@ -291,7 +289,7 @@ function tokenize(code) { // 抽离一层方法只关注一件事
   return tokens;
 }
 
-function lexer(tokens) {
+function lexer(tokens) { // 这个函数关注lexer操作
   const ast = [];
   tokens.forEach((token) => {
     ast.push( /* ... */ );
@@ -300,7 +298,7 @@ function lexer(tokens) {
   return ast;
 }
 
-function parseBetterJSAlternative(code) { // 
+function parseBetterJSAlternative(code) { // 这样这个复杂的函数逻辑就清晰了，每一个函数都有了明确的分工
   const tokens = tokenize(code);
   const ast    = lexer(tokens);
   ast.forEach((node) => {
@@ -345,7 +343,7 @@ function showManagerList(managers) {
 
 `better`
 ```javascript
-function showList(employees) {
+function showList(employees) { // 对于操作大都相同的函数可以抽象一层提取为一个函数
   employees.forEach(employee => {
     const expectedSalary = employee.calculateExpectedSalary();
     const experience = employee.getExperience();
@@ -380,7 +378,7 @@ function writeForumComment(subject, body) {
 
 `better`
 ```javascript
-function writeForumComment(subject = 'No subject', body = 'No text') {
+function writeForumComment(subject = 'No subject', body = 'No text') { // 注意下：这个是es6的写法哟，至少了解es6前没见过人这样写：对于很多没有值的函数，我们都会给出默认值，但是使用逻辑或“||”判断有时看着不是那么爽，那么默认值直接写到函数声明上，这样既简洁了代码也清晰了我们的逻辑，何乐而不为呢😁
   // ...
 }
 ```
@@ -416,7 +414,7 @@ const menuConfig = {
   cancellable: true
 }
 
-function createMenu(config) {
+function createMenu(config) { // 使用Object.assign合并默认值或参数至少看着就更舒服了
   config = Object.assign({
     title: 'Foo',
     body: 'Bar',
@@ -425,12 +423,43 @@ function createMenu(config) {
   }, config);
 
   // config now equals: {title: "Order", body: "Bar", buttonText: "Send", cancellable: true}
-  // ...
 }
 
 createMenu(menuConfig);
-
 ```
+
+_es6 ...扩展优于Object.assign()_
+
+`bad`
+```javascript
+const original = { a: 1, b: 2 };
+const copy = Object.assign({}, original, { c: 3 });
+```
+
+`better`
+```javascript
+const original = { a: 1, b: 2 };
+const copy = { ...original, c: 3 };
+```
+
+_数组使用扩展符... 合并_
+
+`bad`
+```javascript
+const len = items.length;
+const itemsCopy = [];
+let i;
+
+for (i = 0; i < len; i += 1) {
+  itemsCopy[i] = items[i];
+}
+```
+
+`better`
+```javascript
+const itemsCopy = [...items];
+```
+
 _避免附带影响_
 
 `bad`
@@ -460,7 +489,7 @@ const newName = splitIntoFirstAndLastName(name);
 console.log(name); // 'Ryan McDermott';
 console.log(newName); // ['Ryan', 'McDermott'];
 ```
-_避免全局对象修改_
+_避免修改全局对象,如果发现某个对象方法不适用是可以继承该对象并自己写一个或覆写一个方法_
 
 `bad`
 ```javascript
@@ -507,7 +536,7 @@ class SuperArray extends Array {
   }
 }
 ```
-_衷于函数式编程_
+_衷于函数封装编程，有些操作我们封装或使用内置的函数后能更好的表达我们的代码_
 
 `bad`
 ```javascript
@@ -556,7 +585,7 @@ const totalOutput = programmerOutput
   .map((programmer) => programmer.linesOfCode)
   .reduce((acc, linesOfCode) => acc + linesOfCode, 0);
 ```
-_简化条件_
+_简化条件，当条件过多时可以试着写个条件函数来处理具体逻辑_
 
 `bad`
 ```javascript
@@ -603,7 +632,7 @@ _减少参数类型检查_
 `bad`
 ```javascript
 function travelToTexas(vehicle) {
-  if (vehicle instanceof Bicycle) {
+  if (vehicle instanceof Bicycle) { // 又没有什么实际的意义看着很烦
     vehicle.peddle(this.currentLocation, new Location('texas'));
   } else if (vehicle instanceof Car) {
     vehicle.drive(this.currentLocation, new Location('texas'));
@@ -621,8 +650,8 @@ function travelToTexas(vehicle) {
 `bad`
 ```javascript
 function combine(val1, val2) {
-  if (typeof val1 === 'number' && typeof val2 === 'number' ||
-      typeof val1 === 'string' && typeof val2 === 'string') {
+  if (typeof val1 === 'number' && typeof val2 === 'number' || 
+      typeof val1 === 'string' && typeof val2 === 'string') { // 这么长，那么👎
     return val1 + val2;
   }
 
@@ -637,7 +666,7 @@ function combine(val1, val2) {
 }
 ```
 
-_善用setter getter_
+_善用setter getter,这个用的好我们也能更清晰的处理我们的代码_
 
 - When you want to do more beyond getting an object property, you don't have to look up and change every accessor in your codebase.
 Makes adding validation simple when doing a set.
@@ -668,7 +697,7 @@ class BankAccount {
   }
 
   // It doesn't have to be prefixed with `get` or `set` to be a getter/setter
-  set balance(amount) {
+  set balance(amount) { // 当我们设置的值需要逻辑处理，我们就可以在这里干啦，外层根本不关心
     if (verifyIfAmountCanBeSetted(amount)) {
       this._balance = amount;
     }
@@ -762,7 +791,7 @@ class Human extends Mammal {
 }
 ```
 
-_巧用链式方法_
+_巧用链式方法，类似Jqery的用法，很有想法呢_
 
 `bad`
 ```javascript
@@ -831,7 +860,7 @@ class Car {
   }
 }
 
-const car = new Car()
+const car = new Car() // 看着是不是精炼了很多呢
   .setColor('pink')
   .setMake('Ford')
   .setModel('F-150')
@@ -870,7 +899,7 @@ async function getCleanCodeArticle() {
 }
 ```
 
-_注释也许用在刀刃上_
+_注释也需用在刀刃上，并不是每一行都需要注释，注释多了看着也很烦的_
 
 `bad`
 ```javascript
@@ -969,7 +998,7 @@ const atom = {
 };
 ```
 
-_es6 属性声明简写_
+_es6 属性声明简写，当要声明的属性key和变量名相同时就可以使用此方法_
 
 `bad`
 ```javascript
@@ -981,7 +1010,7 @@ const obj = {
 `better`
 ```javascript
 const obj = {
-  lukeSkywalker,
+  lukeSkywalker, // 看着是不是简单多了呢
 };
 ```
 
@@ -1011,37 +1040,7 @@ const obj = {
 };
 ```
 
-_es6 ...扩展优于Object.assign()_
 
-`bad`
-```javascript
-const original = { a: 1, b: 2 };
-const copy = Object.assign({}, original, { c: 3 });
-```
-
-`better`
-```javascript
-const original = { a: 1, b: 2 };
-const copy = { ...original, c: 3 };
-```
-
-_数组使用扩展符... 合并_
-
-`bad`
-```javascript
-const len = items.length;
-const itemsCopy = [];
-let i;
-
-for (i = 0; i < len; i += 1) {
-  itemsCopy[i] = items[i];
-}
-```
-
-`better`
-```javascript
-const itemsCopy = [...items];
-```
 _善用es6解构_
 
 `bad`
