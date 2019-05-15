@@ -1,5 +1,8 @@
 # better-code
 
+- [google style guide](https://github.com/google/styleguide)
+- [google style guide 中文](https://github.com/zh-google-styleguide/zh-google-styleguide)
+
 跟着牛人[`clean-code-javascript`](https://github.com/ryanmcdermott/clean-code-javascript) [`airbnb / javascript`](https://github.com/airbnb/javascript) 学习如何能写出更简洁更美观的JavaScript代码.
 
 _变量/函数命名需要简洁明了，能从命名就知道是干什么的_
